@@ -1,0 +1,96 @@
+<div class="performance-reviews-container">
+  <div class="header">
+    <h2>Performance Reviews</h2>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="actions">
+    <button class="add-btn" (click)="showForm = !showForm">
+      {{ showForm ? 'Cancel' : 'Add Review' }}
+    </button>
+  </div>
+
+  <div class="review-form" *ngIf="showForm">
+    <h3>New Performance Review</h3>
+    <form (ngSubmit)="createReview()">
+      <div class="form-group">
+        <label>Quarter:</label>
+        <select [(ngModel)]="newReview.quarter" name="quarter" required>
+          <option *ngFor="let q of quarters" [value]="q">{{ q }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Rating (1-5):</label>
+        <input type="number" [(ngModel)]="newReview.rating" name="rating" min="1" max="5" required>
+      </div>
+
+      <div class="form-group">
+        <label>Manager Feedback:</label>
+        <textarea [(ngModel)]="newReview.managerFeedback" name="managerFeedback" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Employee Self-Assessment:</label>
+        <textarea [(ngModel)]="newReview.employeeSelfAssessment" name="employeeSelfAssessment" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Goals:</label>
+        <textarea [(ngModel)]="newReview.goals" name="goals" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Achievements:</label>
+        <textarea [(ngModel)]="newReview.achievements" name="achievements" rows="3"></textarea>
+      </div>
+
+      <button type="submit" [disabled]="loading">Create Review</button>
+    </form>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="reviews-list" *ngIf="reviews.length > 0">
+    <h3>Review History</h3>
+    <div class="review-card" *ngFor="let review of reviews">
+      <div class="review-header">
+        <span class="quarter">{{ review.quarter }} {{ review.reviewDate | date:'yyyy' }}</span>
+        <span class="rating">Rating: {{ review.rating }}/5</span>
+        <button class="delete-btn" (click)="deleteReview(review)">Delete</button>
+      </div>
+
+      <div class="review-content">
+        <div class="section" *ngIf="review.managerFeedback">
+          <h4>Manager Feedback</h4>
+          <p>{{ review.managerFeedback }}</p>
+        </div>
+
+        <div class="section" *ngIf="review.employeeSelfAssessment">
+          <h4>Employee Self-Assessment</h4>
+          <p>{{ review.employeeSelfAssessment }}</p>
+        </div>
+
+        <div class="section" *ngIf="review.goals">
+          <h4>Goals</h4>
+          <p>{{ review.goals }}</p>
+        </div>
+
+        <div class="section" *ngIf="review.achievements">
+          <h4>Achievements</h4>
+          <p>{{ review.achievements }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-reviews" *ngIf="reviews.length === 0 && !loading">
+    <p>No performance reviews found for this employee.</p>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    Loading...
+  </div>
+</div>

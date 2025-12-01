@@ -1,0 +1,203 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 flex items-center gap-2">
+            <div class="h-10 w-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-gray-900">Employee Manager</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            routerLink="/dashboard"
+            class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition"
+          >
+            Dashboard
+          </button>
+          <button
+            (click)="logout()"
+            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <a routerLink="/dashboard" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 font-medium">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Dashboard
+      </a>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">
+        {{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}
+      </h1>
+      <p class="text-gray-600">
+        {{ isEditMode ? 'Update employee information' : 'Create a new employee record' }}
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-md p-8 animate-slideIn">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 text-sm font-medium">{{ errorMessage }}</p>
+      </div>
+
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- First Name Field -->
+        <div>
+          <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-2">
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            formControlName="firstName"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Enter first name"
+            [class.border-red-500]="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched"
+          />
+          <div *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('firstName')?.errors?.['required']">First name is required</p>
+            <p *ngIf="employeeForm.get('firstName')?.errors?.['minlength']">First name must be at least 2 characters</p>
+          </div>
+        </div>
+
+        <!-- Last Name Field -->
+        <div>
+          <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-2">
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            formControlName="lastName"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Enter last name"
+            [class.border-red-500]="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched"
+          />
+          <div *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('lastName')?.errors?.['required']">Last name is required</p>
+            <p *ngIf="employeeForm.get('lastName')?.errors?.['minlength']">Last name must be at least 2 characters</p>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+            Email Address
+          </label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="employee@example.com"
+            [class.border-red-500]="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched"
+          />
+          <div *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('email')?.errors?.['required']">Email is required</p>
+            <p *ngIf="employeeForm.get('email')?.errors?.['email']">Please enter a valid email</p>
+          </div>
+        </div>
+
+        <!-- Department Field -->
+        <div>
+          <label for="department" class="block text-sm font-semibold text-gray-700 mb-2">
+            Department
+          </label>
+          <select
+            id="department"
+            formControlName="department"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            [class.border-red-500]="employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched"
+          >
+            <option value="">Select Department</option>
+            <option *ngFor="let dept of departments" [ngValue]="dept">{{ dept.name }}</option>
+          </select>
+          <div *ngIf="employeeForm.get('department')?.invalid && employeeForm.get('department')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('department')?.errors?.['required']">Department is required</p>
+          </div>
+        </div>
+
+        <!-- Role Field -->
+        <div>
+          <label for="role" class="block text-sm font-semibold text-gray-700 mb-2">
+            Position
+          </label>
+          <select
+            id="role"
+            formControlName="role"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            [class.border-red-500]="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched"
+          >
+            <option value="">Select Position</option>
+            <option *ngFor="let role of roles" [ngValue]="role">{{ role.name }}</option>
+          </select>
+          <div *ngIf="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('role')?.errors?.['required']">Position is required</p>
+          </div>
+        </div>
+
+        <!-- Salary Field -->
+        <div>
+          <label for="salary" class="block text-sm font-semibold text-gray-700 mb-2">
+            Salary
+          </label>
+          <div class="relative">
+            <span class="absolute left-4 top-3 text-gray-500 font-semibold">$</span>
+            <input
+              type="number"
+              id="salary"
+              formControlName="salary"
+              class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              placeholder="50000"
+              [class.border-red-500]="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched"
+            />
+          </div>
+          <div *ngIf="employeeForm.get('salary')?.invalid && employeeForm.get('salary')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="employeeForm.get('salary')?.errors?.['required']">Salary is required</p>
+            <p *ngIf="employeeForm.get('salary')?.errors?.['min']">Salary must be a positive number</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4 pt-6 border-t border-gray-200">
+          <button
+            type="submit"
+            [disabled]="employeeForm.invalid || loading"
+            class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:shadow-lg transform hover:scale-105 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <span *ngIf="!loading">{{ isEditMode ? 'Update Employee' : 'Add Employee' }}</span>
+            <span *ngIf="loading" class="inline-flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Saving...
+            </span>
+          </button>
+          <a 
+            routerLink="/dashboard"
+            class="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition duration-200 text-center"
+          >
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

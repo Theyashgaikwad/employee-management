@@ -1,0 +1,140 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 flex items-center gap-2">
+            <div class="h-10 w-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-gray-900">Employee Manager</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <button
+            routerLink="/roles"
+            class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition"
+          >
+            Roles
+          </button>
+          <button
+            (click)="logout()"
+            class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <a routerLink="/roles" class="flex items-center gap-2 text-blue-600 hover:text-blue-800 mb-4 font-medium">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Roles
+      </a>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">
+        {{ isEditMode ? 'Edit Role' : 'Add New Role' }}
+      </h1>
+      <p class="text-gray-600">
+        {{ isEditMode ? 'Update role information' : 'Create a new role record' }}
+      </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-md p-8 animate-slideIn">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-red-700 text-sm font-medium">{{ errorMessage }}</p>
+      </div>
+
+      <form [formGroup]="roleForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Name Field -->
+        <div>
+          <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+            Role Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Enter role name"
+            [class.border-red-500]="roleForm.get('name')?.invalid && roleForm.get('name')?.touched"
+          />
+          <div *ngIf="roleForm.get('name')?.invalid && roleForm.get('name')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="roleForm.get('name')?.errors?.['required']">Role name is required</p>
+            <p *ngIf="roleForm.get('name')?.errors?.['minlength']">Role name must be at least 2 characters</p>
+          </div>
+        </div>
+
+        <!-- Description Field -->
+        <div>
+          <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+            Description
+          </label>
+          <textarea
+            id="description"
+            formControlName="description"
+            rows="4"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="Enter role description (optional)"
+          ></textarea>
+        </div>
+
+        <!-- Base Salary Field -->
+        <div>
+          <label for="baseSalary" class="block text-sm font-semibold text-gray-700 mb-2">
+            Base Salary
+          </label>
+          <div class="relative">
+            <span class="absolute left-4 top-3 text-gray-500 font-semibold">$</span>
+            <input
+              type="number"
+              id="baseSalary"
+              formControlName="baseSalary"
+              class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+              placeholder="50000"
+              [class.border-red-500]="roleForm.get('baseSalary')?.invalid && roleForm.get('baseSalary')?.touched"
+            />
+          </div>
+          <div *ngIf="roleForm.get('baseSalary')?.invalid && roleForm.get('baseSalary')?.touched" class="mt-2 text-sm text-red-600">
+            <p *ngIf="roleForm.get('baseSalary')?.errors?.['min']">Base salary must be a positive number</p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4 pt-6 border-t border-gray-200">
+          <button
+            type="submit"
+            [disabled]="roleForm.invalid || loading"
+            class="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-3 px-4 rounded-lg hover:shadow-lg transform hover:scale-105 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            <span *ngIf="!loading">{{ isEditMode ? 'Update Role' : 'Add Role' }}</span>
+            <span *ngIf="loading" class="inline-flex items-center gap-2">
+              <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Saving...
+            </span>
+          </button>
+          <a
+            routerLink="/roles"
+            class="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-50 transition duration-200 text-center"
+          >
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

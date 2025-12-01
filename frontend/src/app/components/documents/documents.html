@@ -1,0 +1,54 @@
+<div class="documents-container">
+  <div class="header">
+    <h2>Employee Documents</h2>
+    <button class="logout-btn" (click)="logout()">Logout</button>
+  </div>
+
+  <div class="upload-section" *ngIf="employeeId">
+    <h3>Upload New Document</h3>
+    <div class="upload-form">
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+      <input type="date" [(ngModel)]="expiryDate" placeholder="Expiry Date (optional)">
+      <button (click)="uploadDocument()" [disabled]="!selectedFile || loading">
+        {{ loading ? 'Uploading...' : 'Upload' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="documents-list" *ngIf="documents.length > 0">
+    <h3>Documents</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Upload Date</th>
+          <th>Expiry Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let doc of documents">
+          <td>{{ doc.fileName }}</td>
+          <td>{{ doc.uploadDate | date:'short' }}</td>
+          <td>{{ doc.expiryDate ? (doc.expiryDate | date:'short') : 'N/A' }}</td>
+          <td>
+            <button (click)="downloadDocument(doc)">Download</button>
+            <button class="delete-btn" (click)="deleteDocument(doc)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="no-documents" *ngIf="documents.length === 0 && !loading">
+    <p>No documents found for this employee.</p>
+  </div>
+
+  <div class="loading" *ngIf="loading">
+    Loading...
+  </div>
+</div>
